@@ -9,39 +9,12 @@
     </div>
     <div class="container">
       <div class="handle-box">
-        <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
-          <el-option key="1" label="广东省" value="广东省"></el-option>
-          <el-option key="2" label="湖南省" value="湖南省"></el-option>
-        </el-select>
-        <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+        <el-input v-model="query.entity_code" placeholder="主体 ID" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-        <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-        <el-table-column prop="name" label="用户名"></el-table-column>
-        <el-table-column label="账户余额">
-          <template #default="scope">￥{{ scope.row.money }}</template>
-        </el-table-column>
-        <el-table-column label="头像(查看大图)" align="center">
-          <template #default="scope">
-            <el-image class="table-td-thumb" :src="scope.row.thumb" :preview-src-list="[scope.row.thumb]">
-            </el-image>
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" label="地址"></el-table-column>
-        <el-table-column label="状态" align="center">
-          <template #default="scope">
-            <el-tag :type="
-            scope.row.state === '成功'
-            ? 'success'
-            : scope.row.state === '失败'
-            ? 'danger'
-            : ''
-            ">{{ scope.row.state }}</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="date" label="注册时间"></el-table-column>
+        <el-table-column prop="entity_code" label="主体 ID"></el-table-column>
+        <el-table-column prop="factor" label="系数"></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template #default="scope">
             <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑
@@ -58,13 +31,10 @@
     </div>
 
     <!-- 编辑弹出框 -->
-    <el-dialog title="编辑" v-model="editVisible" width="30%">
+    <el-dialog title="修改行业因子" v-model="editVisible" width="30%">
       <el-form label-width="70px">
-        <el-form-item label="用户名">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.address"></el-input>
+        <el-form-item label="系数">
+          <el-input v-model="form.factor"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -80,24 +50,35 @@
 <script>
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { fetchData } from "../api/index";
+import { fetchData } from "../api/adsconf";
 
 export default {
   name: "basetable",
   setup() {
     const query = reactive({
-                           address: "",
-                           name: "",
-                           pageIndex: 1,
-                           pageSize: 10,
+      entity_code: "",
+      pageIndex: 1,
+      pageSize: 10,
     });
     const tableData = ref([]);
     const pageTotal = ref(0);
+
     // 获取表格数据
     const getData = () => {
+      tableData.value = [];
+      pageTotal.value = 0;
+
       fetchData(query).then((res) => {
-        tableData.value = res.list;
-        pageTotal.value = res.pageTotal || 50;
+        res.industry_factors.forEach(function(factor) {
+          factor.entity_codes.forEach(function(entity) {
+            var obj = {};
+            obj.factor = factor.factor;
+            obj.entity_code = entity;
+
+            pageTotal.value += 1;
+            tableData.value.push(obj);
+          });
+        });
       });
     };
     getData();
@@ -107,6 +88,7 @@ export default {
       query.pageIndex = 1;
       getData();
     };
+
     // 分页导航
     const handlePageChange = (val) => {
       query.pageIndex = val;
@@ -129,8 +111,7 @@ export default {
     // 表格编辑时弹窗和保存
     const editVisible = ref(false);
     let form = reactive({
-                        name: "",
-                        address: "",
+      factor: "",
     });
     let idx = -1;
     const handleEdit = (index, row) => {

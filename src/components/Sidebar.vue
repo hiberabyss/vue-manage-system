@@ -39,6 +39,11 @@ export default {
     setup() {
         const items = [
             {
+                icon: "el-icon-lx-cascades",
+                index: "/industryfactor",
+                title: "行业因子",
+            },
+            {
                 icon: "el-icon-lx-home",
                 index: "/dashboard",
                 title: "系统首页",
@@ -107,12 +112,7 @@ export default {
                         title: "404页面",
                     },
                 ],
-            },
-            {
-                icon: "el-icon-lx-redpacket_fill",
-                index: "/donate",
-                title: "支持作者",
-            },
+            }
         ];
 
         const route = useRoute();

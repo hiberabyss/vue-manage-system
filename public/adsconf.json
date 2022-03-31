@@ -1,0 +1,22 @@
+{
+    "newad_boost_ratio": 1.0,
+    "default_min_price": {
+        "min_cpc": 20,
+        "min_pctr": 0.1
+    },
+    "pctr_filter_threshold": 0.0008,
+    "industry_factors": [
+        {
+            "entity_codes": [
+                "zjaywlkjyxgsc0bcc20df7",
+                "hzwykjyxgs11bdc39f9c",
+                "hztawlkjyxgs349e8c233f"
+            ],
+            "factor": 0.3
+        }
+    ],
+    "dislike_report": {
+        "dislike": 60,
+        "report": 120
+    }
+}

@@ -5,26 +5,37 @@ const routes = [
     {
         path: '/',
         redirect: '/dashboard'
-    }, {
+    },
+    {
         path: "/",
         name: "Home",
         component: Home,
         children: [
+            {
+                path: "/industryfactor",
+                name: "industryfactor",
+                meta: {
+                    title: '行业因子'
+                },
+                component: () => import ("../views/IndustryFactor.vue")
+            },
             {
                 path: "/dashboard",
                 name: "dashboard",
                 meta: {
                     title: '系统首页'
                 },
-                component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
-            }, {
+                component: () => import ("../views/Dashboard.vue")
+            },
+            {
                 path: "/table",
                 name: "basetable",
                 meta: {
                     title: '表格'
                 },
                 component: () => import ( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
-            }, {
+            },
+            {
                 path: "/charts",
                 name: "basecharts",
                 meta: {
@@ -45,14 +56,8 @@ const routes = [
                     title: 'tab标签'
                 },
                 component: () => import ( /* webpackChunkName: "tabs" */ "../views/Tabs.vue")
-            }, {
-                path: "/donate",
-                name: "donate",
-                meta: {
-                    title: '鼓励作者'
-                },
-                component: () => import ( /* webpackChunkName: "donate" */ "../views/Donate.vue")
-            }, {
+            },
+      {
                 path: "/permission",
                 name: "permission",
                 meta: {
@@ -111,7 +116,8 @@ const routes = [
                 component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
             }
         ]
-    }, {
+    },
+    {
         path: "/login",
         name: "Login",
         meta: {
