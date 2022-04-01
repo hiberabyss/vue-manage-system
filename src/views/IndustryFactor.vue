@@ -51,9 +51,10 @@
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { fetchData } from "../api/adsconf";
+import {editFactor, deleteEntity} from "../api/industry_factor"
 
 export default {
-  name: "basetable",
+  name: "industryfactor",
   setup() {
     const query = reactive({
       entity_code: "",
@@ -63,12 +64,15 @@ export default {
     const tableData = ref([]);
     const pageTotal = ref(0);
 
+    let ads_conf = {}
+
     // 获取表格数据
     const getData = () => {
       tableData.value = [];
       pageTotal.value = 0;
 
       fetchData(query).then((res) => {
+        ads_conf = res;
         res.industry_factors.forEach(function(factor) {
           factor.entity_codes.forEach(function(entity) {
             var obj = {};
@@ -100,12 +104,12 @@ export default {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除吗？", "提示", {
         type: "warning",
-      })
-        .then(() => {
-          ElMessage.success("删除成功");
-          tableData.value.splice(index, 1);
-        })
-        .catch(() => {});
+      }).then(() => {
+        const entity = tableData.value[index].entity_code;
+        deleteEntity(ads_conf, entity);
+        tableData.value.splice(index, 1);
+        ElMessage.success("Delete successfully!");
+      }).catch(() => {});
     };
 
     // 表格编辑时弹窗和保存
@@ -121,12 +125,23 @@ export default {
       });
       editVisible.value = true;
     };
+
     const saveEdit = () => {
       editVisible.value = false;
-      ElMessage.success(`修改第 ${idx + 1} 行成功`);
+
+      let row = tableData.value[idx];
+      let factor = parseFloat(form.factor);
+      if (row.factor !== form.factor && factor !== NaN) {
+        editFactor(ads_conf, row.entity_code, factor);
+      }
+      /* console.log(row); */
+      console.log(ads_conf);
+
       Object.keys(form).forEach((item) => {
         tableData.value[idx][item] = form[item];
       });
+
+      ElMessage.success(`修改第 ${idx + 1} 行成功`);
     };
 
     return {
