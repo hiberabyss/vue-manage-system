@@ -18,6 +18,61 @@ function confDeleteEntity(conf, entity) {
   }
 }
 
+function updateConf(conf, msg) {
+  setConf(conf).then(res => {
+    ElMessage.success(msg);
+  });
+}
+
+function checkFactor(factor) {
+  return true;
+}
+
+function confAddEntity(conf, in_entity, in_factor) {
+  let factor = parseFloat(in_factor);
+  if (isNaN(factor) || factor < 0) {
+    return false;
+  }
+
+  let entity_list = in_entity.split(/\s+/);
+  if (entity_list.length === 0) {
+    return false;
+  }
+
+  for (const entity of entity_list) {
+    confDeleteEntity(conf, entity);
+  }
+
+  let item = {
+    'entity_codes': entity_list,
+    'factor': factor
+  };
+
+  conf.industry_factors.push(item);
+
+  return true;
+}
+
+function ErrorMsg(msg) {
+  ElMessage({
+    type: 'error',
+    showClose: true,
+    duration: 0,
+    message: msg
+  })
+}
+
+export function addEntity(conf, entity, factor) {
+  if (!confAddEntity(conf, entity, factor)) {
+    ErrorMsg("Invalid input! Fail to add entity: " + entity);
+    return false;
+  }
+
+  updateConf(conf, "Succefully add entity: " + entity);
+
+  return true;
+}
+
 export function deleteEntity(conf, entity) {
   confDeleteEntity(conf, entity);
   setConf(conf).then(res => {
